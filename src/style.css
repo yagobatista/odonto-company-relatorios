@@ -1,0 +1,22 @@
+body {
+    background-color: #252526;
+}
+
+.flex-row {
+    display: flex;
+}
+
+.flex-item {
+    padding: 4px 8px;
+}
+
+button {
+    background-color: #252526;
+    padding: 4px;
+    color: #fff;
+    border: solid 1px #000;
+}
+
+:focus {
+    outline: none;
+}
