@@ -7,7 +7,7 @@
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make",
+    "make": "electron-forge make --platform win32",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\""
   },
@@ -45,7 +45,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "exceljs": "^1.7.0",
     "moment": "^2.24.0",
-    "mysql": "^2.16.0"
+    "node-firebird": "^0.8.6"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.22",

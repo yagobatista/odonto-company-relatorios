@@ -8,7 +8,6 @@ el('action-btn').addEventListener('click', () => {
 }, false);
 
 function fetchData(callback) {
-    debugger;
     var connection = mysql.createConnection(config);
 
     // connect to mysql
@@ -30,7 +29,6 @@ function fetchData(callback) {
     }
     where = where.join(' AND ');
     $query = `SELECT * FROM cliente ${where && ' WHERE ' + where || ''} ;`;
-    debugger;
 
     connection.query($query, function (err, rows, fields) {
         if (err) {
