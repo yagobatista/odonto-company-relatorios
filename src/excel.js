@@ -1,17 +1,27 @@
-var mysql = require('mysql');
 const excelExport = require("./excel-export");
 const el = require('./helpers')
 const config = require('./config')
+var fb  = require("firebird");
 
 el('action-btn').addEventListener('click', () => {
     fetchData(rows => excelExport(rows));
 }, false);
 
 function fetchData(callback) {
-    var connection = mysql.createConnection(config);
+    sys = require("sys"); 
+    var con = fb.createConnection();
+    con.connectSync('config.database',config.user, config.password,'');
+    debugger;
+    var res = con.querySync("select * from ESPECIALIDADES");
+    firebird.attach(config, function (err, db) {
+        if (err)
+            throw err;
 
-    // connect to mysql
-    connection.connect(function (err) {
+        // db = DATABASE
+        db.query('SELECT * FROM VENDED', function (err, result) {
+            // IMPORTANT: close the connection
+            db.detach();
+        });
         // in case of error
         if (err) {
             console.log(err.code);
