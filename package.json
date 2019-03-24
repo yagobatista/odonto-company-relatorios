@@ -44,8 +44,6 @@
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
     "exceljs": "^1.7.0",
-    "firebird": "^0.1.2",
-    "moment": "^2.24.0",
     "node-firebird": "^0.8.6"
   },
   "devDependencies": {

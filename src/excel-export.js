@@ -1,29 +1,38 @@
 const excel = require('exceljs');
-const moment = require('moment');
+var app = require('electron').remote; 
+var dialog = app.dialog;
 
 function excelExport(data) {
-    //Creating New Workbook 
     var workbook = new excel.Workbook();
 
-    //Creating Sheet for that particular WorkBook
     var sheetName = 'Sheet1';
     var sheet = workbook.addWorksheet(sheetName);
 
-    //Header must be in below format
-    sheet.columns = [{
-        key: "nome",
-        header: 'Nome'
+    sheet.columns = [
+    //     {
+    //     key: "nome",
+    //     header: 'Nome'
+    // }, 
+    {
+        key: "documento",
+        header: "documento"
     }, {
-        key: "criado_em",
+        key: "DATA",
         header: "Data"
     }];
-
     sheet.addRows(data);
 
-    //Finally creating XLSX file
-    var fileName = `relatorios-${moment().format('DD-MM-YYYY:H:m:s')}.xlsx`;
-    workbook.xlsx.writeFile(fileName);
-
+    dialog.showSaveDialog((filePath) => {
+        // var fileName = `relatorios-${moment().format('DD-MM-YYYY-H-m-s')}.xlsx`;
+        if ('.xlsx'.indexOf(filePath) === -1) {
+            filePath += '.xlsx';
+        }
+        const file = filePath.split('\\');
+        const fileName = file[file.length -1];
+        workbook.xlsx.writeFile(filePath)
+        .then(()=> alert(`Arquivo ${fileName} salvo com sucesso.`))
+        .catch(error => alert(`Erro ao tentar salvar o arquivo.\n${error}`));
+    });
 }
 
 module.exports = excelExport;
