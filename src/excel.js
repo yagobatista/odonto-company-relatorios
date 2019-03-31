@@ -13,21 +13,32 @@ function fetchData(callback) {
             throw err;
 
         let where = [];
-        const initDate = el('init_date').value;
-        const fimDate = el('fim_date').value;
+        const initDate = el('init_date').value.replace(/-/g, '.');
+        const fimDate = el('fim_date').value.replace(/-/g, '.');
         if (initDate) {
-            where.push(`criado_em > "${initDate}"`);
+            where.push(`A.DATA > '${initDate}'`);
         }
         if (fimDate) {
-            where.push(`criado_em < "${fimDate}"`);
+            where.push(`A.DATA < '${fimDate}'`);
         }
         where = where.join(' AND ');
         where =  (where && ' WHERE ' + where) || '';
-        const query = `SELECT FIRST(100) * FROM AGENDA ${where} ;`;
+        let query = `select A.CNPJ_CPF , NOME, DATA, DATA_PAGO, DATA_LANC, MAX(M.DATA_PAGO), COUNT(A.DATA) from agenda A inner join MAN101 M on A.CNPJ_CPF = M.CNPJ_CPF and A.DATA = M.DATA_LANC  ${where} GROUP BY A.CNPJ_CPF ;`;
+        // query = `select COUNT(M.DATA_PAGO) AS NUM_PAGO, A.CNPJ_CPF, M.DATA_PAGO from agenda A left join MAN101 M on A.CNPJ_CPF = M.CNPJ_CPF and A.DATA = M.DATA_LANC  WHERE A.DATA > '2018.09.01' AND A.DATA < '2018.10.01' AND M.DATA_PAGO IS NULL GROUP BY A.CNPJ_CPF;`;
+        query = `select DISTINCT * from agenda A inner join (
+            SELECT COUNT(*) AS NAO_PAGAS, CNPJ_CPF FROM MAN101 WHERE DATA_PAGO IS NULL GROUP BY CNPJ_CPF
+        ) M on A.CNPJ_CPF = M.CNPJ_CPF  WHERE A.DATA > '2018.09.01' AND A.DATA < '2018.10.01'`;
         db.query(query, function (err, result) {
+            if (err)
+                throw alert('Ocorreu um erro durante a geração do relatório')
+                
             const rows = result.map(row => ({
                 documento: row.CNPJ_CPF && row.CNPJ_CPF.toString(),
-                DATA: row.DATA,
+                data: row.DATA,
+                nome: row.NOME.toString(),
+                fone_1: row.FONE_1,
+                fone_2: row.FONE_2,
+                parcelas_nao_pagas: row.NAO_PAGAS,
             }));
             callback(rows);
             db.detach();
