@@ -29,6 +29,9 @@ function excelExport(data) {
         }, {
             key: "parcelas_nao_pagas",
             header: "Quantidades de parcelas não pagas"
+        }, {
+            key: "agendamentos",
+            header: "Quantidades de agendamentos feitos"
         }
     ];
     sheet.addRows(data);
