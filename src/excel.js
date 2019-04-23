@@ -3,11 +3,17 @@ const el = require('./helpers')
 const config = require('./config')
 var firebird  = require("node-firebird");
 
-el('action-btn').addEventListener('click', () => {
-    fetchData(rows => excelExport(rows));
-}, false);
+document.querySelectorAll('.action-btn').forEach(element => {
+    element.addEventListener('click', e => {
+        let type = 'CLINICO';
+        if (e.currentTarget.dataset.relatorio === 'inandi-orto') {
+            type = 'ORTO'
+        }
+        fetchData(rows => excelExport(rows), type);
+    }, false); 
+});
 
-function fetchData(callback) {
+function fetchData(callback, type) {
     firebird.attach(config, function (err, db) {
         if (err)
             throw err;
@@ -27,7 +33,7 @@ function fetchData(callback) {
         // query = `select COUNT(M.DATA_PAGO) AS NUM_PAGO, A.CNPJ_CPF, M.DATA_PAGO from agenda A left join MAN101 M on A.CNPJ_CPF = M.CNPJ_CPF and A.DATA = M.DATA_LANC  WHERE A.DATA > '2018.09.01' AND A.DATA < '2018.10.01' AND M.DATA_PAGO IS NULL GROUP BY A.CNPJ_CPF;`;
         query = `select DISTINCT * from agenda A inner join (
             SELECT COUNT(*) AS NAO_PAGAS, CNPJ_CPF FROM MAN101 WHERE DATA_PAGO IS NULL GROUP BY CNPJ_CPF
-        ) M on A.CNPJ_CPF = M.CNPJ_CPF  WHERE A.DATA > '2018.09.01' AND A.DATA < '2018.10.01'`;
+        ) M on A.CNPJ_CPF = M.CNPJ_CPF WHERE A.DEPARTAMENTO = '${type}' AND A.DATA > '2018.09.01' AND A.DATA < '2018.10.01'`;
         db.query(query, function (err, result) {
             if (err)
                 throw alert('Ocorreu um erro durante a geração do relatório')
@@ -40,7 +46,11 @@ function fetchData(callback) {
                 fone_2: row.FONE_2,
                 parcelas_nao_pagas: row.NAO_PAGAS,
             }));
-            callback(rows);
+            if (rows.length) {
+                callback(rows);
+            } else {
+                alert('Nenhum resultado foi encontrado');
+            }
             db.detach();
         });
     });
