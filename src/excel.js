@@ -1,7 +1,9 @@
 const excelExport = require("./excel-export");
-const el = require('./helpers')
+const getWhereData = require('./helpers');
 const config = require('./config')
 const firebird = require("node-firebird");
+const getQueries = require('./queries')
+
 
 document.querySelectorAll('.action-btn').forEach(element => {
     element.addEventListener('click', e => fetchData(rows => excelExport(rows), e.currentTarget.dataset.relatorio), false);
@@ -12,66 +14,62 @@ function fetchData(callback, type) {
         if (err)
             throw err;
 
-        let where = [];
-        const initDate = el('init_date').value.replace(/-/g, '.');
-        const fimDate = el('fim_date').value.replace(/-/g, '.');
-        let dataColumn = 'A.DATA';
-        if (type === 'agendamentos') {
-            dataColumn = 'E.DT_CADASTRO';
-        }
-        if (initDate) {
-            where.push(`${dataColumn} > '${initDate}'`);
-        }
-        if (fimDate) {
-            where.push(`${dataColumn} < '${fimDate}'`);
-        }
-        where = where.join(' AND ');
-        // where =  (where && ' WHERE ' + where) || '';
-        // let query = {`select A.CNPJ_CPF , NOME, DATA, DATA_PAGO, DATA_LANC, MAX(M.DATA_PAGO), COUNT(A.DATA) from agenda A inner join MAN101 M on A.CNPJ_CPF = M.CNPJ_CPF and A.DATA = M.DATA_LANC  ${where} GROUP BY A.CNPJ_CPF ;`;
-        // query = `select COUNT(M.DATA_PAGO) AS NUM_PAGO, A.CNPJ_CPF, M.DATA_PAGO from agenda A left join MAN101 M on A.CNPJ_CPF = M.CNPJ_CPF and A.DATA = M.DATA_LANC  WHERE A.DATA > '2018.09.01' AND A.DATA < '2018.10.01' AND M.DATA_PAGO IS NULL GROUP BY A.CNPJ_CPF;`;}
         let query = type;
-        const queries = {
-            inadimplencia: {
-                query: `select DISTINCT * from agenda A inner join (
-                                SELECT COUNT(*) AS NAO_PAGAS, CNPJ_CPF FROM MAN101 WHERE DATA_PAGO IS NULL GROUP BY CNPJ_CPF
-                            ) M on A.CNPJ_CPF = M.CNPJ_CPF WHERE A.DEPARTAMENTO = '${type}' AND ${where}`,
-                estrutura: (row) => ({
-                    documento: row.CNPJ_CPF && row.CNPJ_CPF.toString(),
-                    data: row.DATA,
-                    nome: row.NOME.toString(),
-                    fone_1: row.FONE_1,
-                    fone_2: row.FONE_2,
-                    parcelas_nao_pagas: row.NAO_PAGAS,
-                })
-            },
-            agendamentos: {
-                query: `select E.CGC_CPF as cpf,  E.NOME as NOME, E.DT_CADASTRO, COUNT(E.CGC_CPF) AS agendamentos from agenda A inner join EMD101 E on A.CNPJ_CPF = E.CGC_CPF
-                                        WHERE ${where} GROUP BY E.CGC_CPF, E.NOME, E.DT_CADASTRO`,
-                estrutura: (row) => ({
-                    documento: row.CPF && row.CPF.toString(),
-                    data: row.DT_CADASTRO,
-                    nome: row.NOME.toString(),
-                    agendamentos: row.AGENDAMENTOS,
-
-                })
-            }
-        };
+        const queries = getQueries(type);
         if (type === 'CLINICO' || type === 'ORTO') {
             query = 'inadimplencia';
         }
         const consulta = queries[query];
-        db.query(consulta.query, function (err, result) {
-            if (err)
-                throw alert('Ocorreu um erro durante a geração do relatório')
+        if (type === 'vendedores') {
+            db.query('select * from VENDED', function (err, result) {
+                if (err)
+                    throw alert('Ocorreu um erro durante a geração do relatório')
 
-            const rows = result.map(row => consulta.estrutura(row));
-            if (rows.length) {
-                callback(rows);
-            } else {
-                alert('Nenhum resultado foi encontrado');
-            }
-            db.detach();
-        });
+                const vendedores = [];
+                result.forEach(vendedor => { vendedores[vendedor.CODIGO] = vendedor.NOME.toString() });
+                if (vendedores.length) {
+                    db.query(`select * from CRD111 C inner join EMD101 E on C.CGC_CPF = E.CGC_CPF where ${getWhereData('E.DT_CADASTRO')}`, function (err, result) {
+                        if (err)
+                            throw alert('Ocorreu um erro durante a geração do relatório')
+
+                        const data = result.map(function (row) {
+                            return {
+                                ...row,
+                                vendedor_nome: this[row.RESPONSAVEL.toString()],
+                            }
+                        }.bind(this));
+                        if (data.length) {
+                            const columns = [
+                                { key: "documento", header: "documento" },
+                                { key: "data", header: "data" },
+                                { key: "nome", header: "Nome" },
+                                { key: "agendamentos", header: "Quantidades de agendamentos feitos" }
+                            ];
+                            callback({ data, columns });
+                        } else {
+                            alert('Nenhum resultado foi encontrado');
+                        }
+                    }.bind(vendedores));
+                } else {
+                    alert('Nenhum resultado foi encontrado');
+                }
+                db.detach();
+            });
+        } else {
+            db.query(consulta.query, function (err, result) {
+                if (err)
+                    throw alert('Ocorreu um erro durante a geração do relatório')
+
+                const data = result.map(row => consulta.estrutura(row));
+                if (data.length) {
+                    callback({ data, columns: consulta.columns });
+                } else {
+                    alert('Nenhum resultado foi encontrado');
+                }
+                db.detach();
+            });
+        }
     });
 
 }
+
