@@ -40,6 +40,23 @@ const getQueries = function (type) {
                 { key: "agendamentos", header: "Quantidades de agendamentos feitos" }
             ],
         },
+        vendas: {
+            query: `select V.NOME as vendedor_nome, C.CGC_CPF, E.NOME, C.VALOR_VENDA from VENDED V inner join EMD101 E on V.CODIGO = E.COD_VENDEDOR inner join CRD111 C on C.CGC_CPF = E.CGC_CPF where ${getWhereData('E.DT_CADASTRO')}`,
+            estrutura: (row) => ({
+                documento: row.CGC_CPF.toString(),
+                nome: row.NOME.toString(),
+                valor: row.VALOR_VENDA.toFixed(2),
+                vendedor_nome: row.VENDEDOR_NOME.toString(),
+            }),
+            columns: [
+                { key: "documento", header: "documento" },
+                { key: "data", header: "data" },
+                { key: "nome", header: "Nome cliente" },
+                { key: "valor", header: "Valor venda" },
+                { key: "vendedor_nome", header: "Nome vendedor" },
+            ],
+        },
+
     };
 }
 
