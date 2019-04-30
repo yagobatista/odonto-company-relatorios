@@ -6,11 +6,16 @@ const getQueries = require('./queries')
 
 
 document.querySelectorAll('.action-btn').forEach(element => {
-    element.addEventListener('click', e => fetchData(rows => excelExport(rows), e.currentTarget.dataset.relatorio), false);
+    element.addEventListener('click', e => {
+        e.currentTarget.disabled = true;
+        fetchData(rows => excelExport(rows), e.currentTarget.dataset.relatorio)
+        e.currentTarget.disabled = false;
+    }, false);
 });
 
 function fetchData(callback, type) {
-    firebird.attach(config, function (err, db) {
+    let banco = type === 'contrato' ? config.contratos : config.clinica;
+    firebird.attach(banco, function (err, db) {
         if (err)
             throw err;
 

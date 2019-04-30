@@ -12,9 +12,13 @@ body {
 
 button {
     background-color: #252526;
-    padding: 4px;
+    font-size: 16px;
+    padding: 8px;
     color: #fff;
     border: solid 1px #000;
+}
+button:disabled{
+    background-color: #676767;
 }
 
 :focus {

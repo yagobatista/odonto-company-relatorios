@@ -21,7 +21,6 @@ const getQueries = function (type) {
                 { key: "fone_1", header: "Fone 1" },
                 { key: "fone_2", header: "Fone 2" },
                 { key: "parcelas_nao_pagas", header: "Quantidades de parcelas não pagas" },
-                { key: "agendamentos", header: "Quantidades de agendamentos feitos" }
             ],
         },
         agendamentos: {
