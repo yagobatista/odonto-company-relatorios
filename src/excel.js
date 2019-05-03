@@ -1,21 +1,25 @@
-const excelExport = require("./excel-export");
-const getWhereData = require('./helpers');
-const config = require('./config')
-const firebird = require("node-firebird");
+const Database = require('node-firebird');
+const config = require('./config');
+const excelExport = require('./excel-export');
+const excelImport = require('./excel-import');
 const getQueries = require('./queries')
 
 
 document.querySelectorAll('.action-btn').forEach(element => {
     element.addEventListener('click', e => {
         e.currentTarget.disabled = true;
-        fetchData(rows => excelExport(rows), e.currentTarget.dataset.relatorio)
+        if (e.currentTarget.dataset.relatorio === 'financeiro') {
+            excelImport();
+        } else {
+            fetchData(rows => excelExport(rows), e.currentTarget.dataset.relatorio);
+        }
         e.currentTarget.disabled = false;
     }, false);
 });
 
 function fetchData(callback, type) {
     let banco = type === 'contrato' ? config.contratos : config.clinica;
-    firebird.attach(banco, function (err, db) {
+    Database.attach(banco, function (err, db) {
         if (err)
             throw err;
 

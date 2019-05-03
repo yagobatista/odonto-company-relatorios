@@ -10,8 +10,8 @@ const getQueries = function (type) {
                 documento: row.CNPJ_CPF && row.CNPJ_CPF.toString(),
                 data: row.DATA,
                 nome: row.NOME.toString(),
-                fone_1: row.FONE_1,
-                fone_2: row.FONE_2,
+                fone_1: row.FONE_1 || '',
+                fone_2: row.FONE_2 || '',
                 parcelas_nao_pagas: row.NAO_PAGAS,
             }),
             columns: [
