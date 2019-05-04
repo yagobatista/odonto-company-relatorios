@@ -1,4 +1,4 @@
-const getWhereData = require('./helpers');
+const { getWhereData } = require('./helpers');
 
 const getQueries = function (type) {
     return {
@@ -10,8 +10,8 @@ const getQueries = function (type) {
                 documento: row.CNPJ_CPF && row.CNPJ_CPF.toString(),
                 data: row.DATA,
                 nome: row.NOME.toString(),
-                fone_1: row.FONE_1,
-                fone_2: row.FONE_2,
+                fone_1: row.FONE_1 || '',
+                fone_2: row.FONE_2 || '',
                 parcelas_nao_pagas: row.NAO_PAGAS,
             }),
             columns: [
@@ -53,6 +53,48 @@ const getQueries = function (type) {
                 { key: "nome", header: "Nome cliente" },
                 { key: "valor", header: "Valor venda" },
                 { key: "vendedor_nome", header: "Nome vendedor" },
+            ],
+        },
+        financeiro_clinico: {
+            estrutura: (row, posicionamento, dentista) => ({
+                dentista,
+                nome: row[2],
+                nundoc: row[7 + posicionamento],
+                proced: row[8 + posicionamento],
+                servico: row[9 + posicionamento],
+                dente: row[12],
+                valor: row[14 + posicionamento],
+                concluido: row[15 + posicionamento].toLocaleDateString('pt-br'),
+            }),
+            columns: [
+                { key: "dentista", header: "Dentista" },
+                { key: "nome", header: "NOME" },
+                { key: "nundoc", header: "NUM DOC" },
+                { key: "proced", header: "PROCED" },
+                { key: "servico", header: "PRODUTO / SERVIÇO" },
+                { key: "dente", header: "DENTE" },
+                { key: "valor", header: "VALOR" },
+                { key: "concluido", header: "CONCLUÍDO'" },
+            ],
+        },	
+        financeiro_orto: {
+            estrutura: (row, posicionamento, dentista) => ({
+                nome: row[2],
+                nundoc: row[6],
+                proced: row[7],
+                tipo: row[11 + posicionamento],
+                resp: row[12 + posicionamento],
+                lanc: row[14 + posicionamento].toLocaleDateString('pt-br'),
+                rec_ret: row[15 + posicionamento],
+            }),
+            columns: [
+                { key: 'nome', header: 'NOME' },
+                { key: 'nundoc', header: 'NUM' },
+                { key: 'proced', header: 'PROCEDIMENTO' },
+                { key: 'tipo', header: 'TIPO' },
+                { key: 'resp', header: 'RESPONSAVEL' },
+                { key: 'lanc', header: 'LANCTO' },
+                { key: 'rec_ret', header: 'REC/RET' },
             ],
         },
 

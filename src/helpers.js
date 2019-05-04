@@ -15,5 +15,7 @@ function getWhereData(dataColumn = 'A.DATA') {
     // where =  (where && ' WHERE ' + where) || '';
     return where;
 }
-module.exports = el;
-module.exports = getWhereData;
+module.exports = {
+    getWhereData,
+    el,
+};
