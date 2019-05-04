@@ -1,61 +1,37 @@
 const { Workbook } = require('exceljs');
 const excelExport = require('./excel-export');
+const getQueries = require('./queries');
 var app = require('electron').remote;
 var dialog = app.dialog;
+const ignoredColumnValues = ['LISTA - CONCLUÍDOS', 'PERÍODO:', 'EMPRESA:', 'NOME', 'CONCLUÍDOS:', 'SUB TOTAL:', 'TOTAL:', 'MANUTENÇÃO - PROCEDIMENTO - DETALHADO'];
 
 
-module.exports = function excelImport() {
-    const filePath = ["C:\DB\dentista.xlsx"];
+module.exports = function excelImport(type) {
     dialog.showOpenDialog(filePath => {
         const workbook = new Workbook();
-
+        const exportQueries = getQueries();
+        const currentQuery = exportQueries[`financeiro_${type}`];
         workbook.xlsx.readFile(filePath[0])
             .then(file => {
                 const sheet = file.worksheets[0];
-                const firstRow = sheet.getRow(11);
-                let dentista = firstRow.values[3];
-                sheet.spliceRows(1, 11);
+                let dentista = '';
                 const data = [];
-                sheet.eachRow((row, index) => {
-                    const values = row.values;
-                    if (values[2] === 'CONCLUÍDOS:') {
-                        let i = index;
-                        let auxDentista;
-                        do {
-                            i++;
-                            auxDentista = sheet.getRow(i).values[3];
-                        } while (!auxDentista);
-                        dentista = auxDentista;
+                sheet.eachRow(row => {
+                    const rowValues = row.values;
+                    if (!isNaN(rowValues[2])) {
+                        dentista = rowValues[2];
                     }
-                    if (values[2] && values[2] !== 'CONCLUÍDOS:' && isNaN(values[2])) {
+                    if (rowValues[2] && ignoredColumnValues.indexOf(rowValues[2]) === -1 && isNaN(rowValues[2])) {
                         let posicionamento = 0;
-                        if (values[6]) {
+                        if (rowValues[6]) {
                             posicionamento = -1;
                         }
-                        data.push({
-                            dentista,
-                            nome: values[2],
-                            nundoc: values[7 + posicionamento],
-                            proced: values[8 + posicionamento],
-                            servico: values[9 + posicionamento],
-                            dente: values[12],
-                            valor: values[14 + posicionamento],
-                            concluido: values[15 + posicionamento],
-                        });
+                        data.push(currentQuery.estrutura(rowValues, posicionamento, dentista));
                     }
                 });	
                 excelExport({
                     data,
-                    columns: [
-                        { key: "dentista", header: "Dentista" },
-                        { key: "nome", header: "OME" },
-                        { key: "nundoc", header: "NUM DOC" },
-                        { key: "proced", header: "PROCED" },
-                        { key: "servico", header: "PRODUTO / SERVIÇO" },
-                        { key: "dente", header: "DENTE" },
-                        { key: "valor", header: "VALOR" },
-                        { key: "concluido", header: "CONCLUÍDO'" },
-                    ],
+                    columns: currentQuery.columns,
                 })
 
             })

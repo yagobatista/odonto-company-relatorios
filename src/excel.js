@@ -9,7 +9,7 @@ document.querySelectorAll('.action-btn').forEach(element => {
     element.addEventListener('click', e => {
         e.currentTarget.disabled = true;
         if (e.currentTarget.dataset.relatorio === 'financeiro') {
-            excelImport();
+            excelImport(e.currentTarget.dataset.type);
         } else {
             fetchData(rows => excelExport(rows), e.currentTarget.dataset.relatorio);
         }
