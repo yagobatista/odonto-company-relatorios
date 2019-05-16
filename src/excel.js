@@ -21,7 +21,7 @@ function fetchData(callback, type) {
     let banco = type === 'contrato' ? config.contratos : config.clinica;
     Database.attach(banco, function (err, db) {
         if (err)
-            throw err;
+            throw alert(err);
 
         let query = type;
         const queries = getQueries(type);
@@ -31,7 +31,7 @@ function fetchData(callback, type) {
         const consulta = queries[query];
         db.query(consulta.query, function (err, result) {
             if (err)
-                throw alert('Ocorreu um erro durante a geração do relatório')
+                throw alert(`Ocorreu um erro durante a geração do relatório;\n${err}`)
 
             const data = result.map(row => consulta.estrutura(row));
             if (data.length) {

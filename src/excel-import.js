@@ -22,11 +22,10 @@ module.exports = function excelImport(type) {
                         dentista = rowValues[3];
                     }
                     if (rowValues[2] && ignoredColumnValues.indexOf(rowValues[2]) === -1 && isNaN(rowValues[2])) {
-                        let posicionamento = 0;
-                        if ((rowValues[6] && type === 'clinico') || (rowValues[10] && type === 'orto')) {
-                            posicionamento = -1;
-                        }
-                        data.push(currentQuery.estrutura(rowValues, posicionamento, dentista));
+                        const newRow = [];
+                        rowValues.forEach(column => newRow.push(column));
+                        const posicionamento = newRow.length === 7 ? false : -1;
+                        data.push(currentQuery.estrutura(newRow, posicionamento, dentista));
                     }
                 });
                 excelExport({
