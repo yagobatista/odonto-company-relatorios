@@ -15,7 +15,12 @@ function getWhereData(dataColumn = 'A.DATA') {
     // where =  (where && ' WHERE ' + where) || '';
     return where;
 }
+function getWhereQtdNaoPagas() {
+    const qtdParcelas = el('qtd_parcelas');
+    return qtdParcelas.value && `AND NAO_PAGAS = ${qtdParcelas.value}` || ''
+}
 module.exports = {
     getWhereData,
+    getWhereQtdNaoPagas,
     el,
 };
