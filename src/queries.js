@@ -8,7 +8,7 @@ const getQueries = function (type) {
                         ) M on A.CNPJ_CPF = M.CNPJ_CPF WHERE A.DEPARTAMENTO = '${type}' AND ${getWhereData()} ${getWhereQtdNaoPagas()}`,
             estrutura: (row) => ({
                 documento: row.CNPJ_CPF && row.CNPJ_CPF.toString(),
-                data: row.DATA && row.DATA.toLocaleDateString('pt-br'),
+                data: row.DATA && row.DATA.toLocaleDateString('pt-br') || '',
                 nome: row.NOME.toString(),
                 parcelas_nao_pagas: row.NAO_PAGAS,
             }),
@@ -16,14 +16,13 @@ const getQueries = function (type) {
                 { key: "documento", header: "documento" },
                 { key: "data", header: "data" },
                 { key: "nome", header: "Nome" },
-                { key: "fone_1", header: "Fone 1" },
-                { key: "fone_2", header: "Fone 2" },
                 { key: "parcelas_nao_pagas", header: "Quantidades de parcelas não pagas" },
             ],
         },
         agendamentos: {
-            query: `select E.CGC_CPF as cpf,  E.NOME as NOME, E.DT_CADASTRO, COUNT(E.CGC_CPF) AS agendamentos from agenda A inner join EMD101 E on A.CNPJ_CPF = E.CGC_CPF
-                                        WHERE ${getWhereData('E.DT_CADASTRO')} GROUP BY E.CGC_CPF, E.NOME, E.DT_CADASTRO`,
+            query: `select E.CGC_CPF as cpf,  E.NOME as NOME, E.DT_CADASTRO, COUNT(E.CGC_CPF) AS agendamentos from agenda A 
+                        inner join EMD101 E on A.CNPJ_CPF = E.CGC_CPF
+                    WHERE ${getWhereData('E.DT_CADASTRO')} GROUP BY E.CGC_CPF, E.NOME, E.DT_CADASTRO`,
             estrutura: (row) => ({
                 documento: row.CPF && row.CPF.toString(),
                 data: row.DT_CADASTRO && row.DT_CADASTRO.toLocaleDateString('pt-br'),
@@ -38,12 +37,14 @@ const getQueries = function (type) {
             ],
         },
         vendas: {
-            query: `select DISTINCT (CGC_CPF), vendedor_nome, DT_CADASTRO, NOME, VALOR_VENDA from (select V.NOME as vendedor_nome, E.DT_CADASTRO, C.CGC_CPF, E.NOME, C.VALOR_VENDA from VENDED V inner join EMD101 E on V.CODIGO = E.COD_VENDEDOR inner join CRD111 C on C.CGC_CPF = E.CGC_CPF where ${getWhereData('E.DT_CADASTRO')})`,
+            query: `select DISTINCT * from (
+                        select V.NOME as vendedor_nome, E.DT_CADASTRO, C.CGC_CPF, E.NOME from VENDED V inner join EMD101 E
+                            on V.CODIGO = E.COD_VENDEDOR inner join CRD111 C on C.CGC_CPF = E.CGC_CPF where ${getWhereData('E.DT_CADASTRO')}
+                     )`,
             estrutura: (row) => ({
                 documento: row.CGC_CPF.toString(),
                 data_venda: row.DT_CADASTRO && row.DT_CADASTRO.toLocaleDateString('pt-br'),
                 nome: row.NOME.toString(),
-                valor: row.VALOR_VENDA.toFixed(2),
                 vendedor_nome: row.VENDEDOR_NOME.toString(),
             }),
             columns: [
