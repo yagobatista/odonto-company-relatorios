@@ -2,18 +2,17 @@ const excel = require('exceljs');
 var app = require('electron').remote;
 var dialog = app.dialog;
 
-const excelExport = function (rows) {
+const excelExport = function ({ data, columns, type }) {
     var workbook = new excel.Workbook();
 
     var sheetName = 'Sheet1';
     var sheet = workbook.addWorksheet(sheetName);
 
-    sheet.columns = rows.columns;
-    sheet.addRows(rows.data);
+    sheet.columns = columns;
+    sheet.addRows(data);
 
     dialog.showSaveDialog((filePath) => {
-        // var fileName = `relatorios-${moment().format('DD-MM-YYYY-H-m-s')}.xlsx`;
-        if ('.xlsx'.indexOf(filePath) === -1) {
+        if (filePath.indexOf('.xlsx') === -1) {
             filePath += '.xlsx';
         }
         const file = filePath.split('\\');

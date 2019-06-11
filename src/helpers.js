@@ -11,13 +11,19 @@ function getWhereData(dataColumn = 'A.DATA') {
     if (fimDate) {
         where.push(`${dataColumn} < '${fimDate}'`);
     }
+    if (!initDate || !fimDate) {
+        throw alert('Por favor, digite datas válidas!')
+    }
     where = where.join(' AND ');
     // where =  (where && ' WHERE ' + where) || '';
     return where;
 }
 function getWhereQtdNaoPagas() {
     const qtdParcelas = el('qtd_parcelas');
-    return qtdParcelas.value && `AND NAO_PAGAS = ${qtdParcelas.value}` || ''
+    if (!qtdParcelas.value) {
+        throw alert('Por favor, digite uma quantidade de parcelas válida!')
+    }
+    return `NAO_PAGAS = ${qtdParcelas.value}` || ''
 }
 module.exports = {
     getWhereData,
