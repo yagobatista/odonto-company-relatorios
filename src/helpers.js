@@ -12,6 +12,9 @@ function getWhereData(dataColumn = 'A.DATA') {
         where.push(`${dataColumn} < '${fimDate}'`);
     }
     if (!initDate || !fimDate) {
+        document.querySelectorAll('.action-btn').forEach(element => {
+            element.disabled = false;
+        });
         throw alert('Por favor, digite datas válidas!')
     }
     where = where.join(' AND ');
@@ -21,6 +24,9 @@ function getWhereData(dataColumn = 'A.DATA') {
 function getWhereQtdNaoPagas() {
     const qtdParcelas = el('qtd_parcelas');
     if (!qtdParcelas.value) {
+        document.querySelectorAll('.action-btn').forEach(element => {
+            element.disabled = false;
+        });
         throw alert('Por favor, digite uma quantidade de parcelas válida!')
     }
     return `NAO_PAGAS = ${qtdParcelas.value}` || ''

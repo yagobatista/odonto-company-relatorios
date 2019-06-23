@@ -8,50 +8,57 @@ const ignoredColumnValues = ['LISTA - CONCLUÍDOS', 'PERÍODO:', 'EMPRESA:', 'NO
 
 module.exports = function excelImport({ data, type, columns, button }) {
     dialog.showOpenDialog(filePath => {
-        const workbook = new Workbook();
-        const currentQuery = queries[type];
-        workbook.xlsx.readFile(filePath[0])
-            .then(file => {
-                const sheet = file.worksheets[0];
-                let dentista = '';
-                const data = [];
-                sheet.eachRow(row => {
-                    const rowValues = row.values;
-                    if (type === 'financeiro_spc') {
-                        data.push(rowValues[1])
-                    } else {
-                        if (!isNaN(rowValues[2])) {
-                            dentista = rowValues[3];
-                        }
-                        if (rowValues[2] && ignoredColumnValues.indexOf(rowValues[2]) === -1 && isNaN(rowValues[2])) {
-                            const newRow = [];
-                            rowValues.forEach(column => newRow.push(column));
-                            const posicionamento = newRow.length === 7 ? false : -1;
-                            data.push(currentQuery.estrutura(newRow, posicionamento, dentista));
-                        }
-                    }
-                });
-                if (type === 'financeiro_spc') {
-                    fetchData({callback(rows){
-                        const clientesQuePagaram = [];
-                        data.forEach(value =>{
-                            const result = rows.data.find(item => item.documento === value);
-                            if (!result) {
-                                debugger;
-                                clientesQuePagaram.push(result);
+        if (filePath) {
+            const workbook = new Workbook();
+            const currentQuery = queries[type];
+            workbook.xlsx.readFile(filePath[0])
+                .then(file => {
+                    const sheet = file.worksheets[0];
+                    let dentista = '';
+                    const data = [];
+                    sheet.eachRow(row => {
+                        const rowValues = row.values;
+                        if (type === 'financeiro_spc') {
+                            data.push(rowValues[1])
+                        } else {
+                            if (!isNaN(rowValues[2])) {
+                                dentista = rowValues[3];
                             }
-                        })
-                        button.disabled = false;
-                        debugger;
-                    }, type})
-                } else {
-                    excelExport({
-                        data,
-                        columns: currentQuery.columns,
+                            if (rowValues[2] && ignoredColumnValues.indexOf(rowValues[2]) === -1 && isNaN(rowValues[2])) {
+                                const newRow = [];
+                                rowValues.forEach(column => newRow.push(column));
+                                const posicionamento = newRow.length === 7 ? false : -1;
+                                data.push(currentQuery.estrutura(newRow, posicionamento, dentista));
+                            }
+                        }
                     });
-                }
+                    if (type === 'financeiro_spc') {
+                        fetchData({
+                            callback(rows) {
+                                const clientesQuePagaram = [];
+                                data.forEach(value => {
+                                    const result = rows.data.find(item => item.documento === value);
+                                    if (!result) {
+                                        clientesQuePagaram.push({ documento: value });
+                                    }
+                                })
+                                button.disabled = false;
+                                excelExport({ ...rows, data: clientesQuePagaram });
+                            },
+                            type
+                        });
+                    } else {
+                        button.disabled = false;
+                        excelExport({
+                            data,
+                            columns: currentQuery.columns,
+                        });
+                    }
 
-            })
-            .catch(error => alert(`Erro ao tentar salvar o arquivo.\n${error}`));
+                })
+                .catch(error => alert(`Erro ao tentar salvar o arquivo.\n${error}`));
+        } else {
+            button.disabled = false;
+        }
     });
 }

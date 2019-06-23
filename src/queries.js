@@ -12,7 +12,7 @@ const queries = {
                         WHERE NOT EXISTS (SELECT * FROM BXD111 WHERE BXD111.DOCUMENTO = C.DOCUMENTO AND BXD111.CGC_CPF = C.CGC_CPF)GROUP BY E.CGC_CPF, E.NOME 
                     ) where ${getWhereQtdNaoPagas()}`,
         estrutura: (row) => ({
-            documento: row.CGC_CPF && row.CGC_CPF.toString(),
+            documento: row.CNPJ_CPF && row.CNPJ_CPF.toString(),
             nome: row.NOME.toString(),
             cobrancas_nao_pagas: row.NAO_PAGAS,
         }),
@@ -29,7 +29,7 @@ const queries = {
                         WHERE DATA_LANC < '${today}' AND DATA_PAGO IS NULL GROUP BY CNPJ_CPF, NOME) 
                     WHERE ${getWhereQtdNaoPagas()}`,
         estrutura: (row) => ({
-            documento: row.CGC_CPF && row.CGC_CPF.toString(),
+            documento: row.CNPJ_CPF && row.CNPJ_CPF.toString(),
             nome: row.NOME.toString(),
             cobrancas_nao_pagas: row.NAO_PAGAS,
         }),
@@ -71,7 +71,6 @@ const queries = {
             { key: "documento", header: "documento" },
             { key: "data_venda", header: "data" },
             { key: "nome", header: "Nome cliente" },
-            { key: "valor", header: "Valor venda" },
             { key: "vendedor_nome", header: "Nome vendedor" },
         ],
     },
@@ -129,13 +128,9 @@ const queries = {
                         ${where};`,
         estrutura: (row) => ({
             documento: row.CNPJ_CPF && row.CNPJ_CPF.toString(),
-            nome: row.NOME.toString(),
-            parcelas_nao_pagas: row.NAO_PAGAS,
         }),
         columns: [
             { key: "documento", header: "documento" },
-            { key: "nome", header: "Nome" },
-            { key: "parcelas_nao_pagas", header: "Quantidades de parcelas não pagas" },
         ],
     },
 
