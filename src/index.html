@@ -10,24 +10,26 @@
 <body>
     <div class="flex-row">
         <div class="flex-item">
+            <label for="">Data inicial</label>
             <input type="date" name="" id="init_date">
         </div>
         <div class="flex-item">
+            <label for="">Data final</label>
             <input type="date" name="" id="fim_date">
         </div>
         <div class="flex-item">
+            <label for="">Quantidade de parcelas</label>
             <input type="number" name="" id="qtd_parcelas">
         </div>
     </div>
     <div class="flex-row">
         <div class="flex-item">
-            <button type="button" class="action-btn" data-relatorio="CLINICO">Relatório de inadimplência
-                clínico</button>
+            <button type="button" class="action-btn" data-relatorio="inadimplencia_clinico">Relatório de inadimplência clínico</button>
         </div>
     </div>
     <div class="flex-row">
         <div class="flex-item">
-            <button type="button" class="action-btn" data-relatorio="ORTO">Relatório de inadimplência orto</button>
+            <button type="button" class="action-btn" data-relatorio="inadimplencia_orto">Relatório de inadimplência orto</button>
         </div>
     </div>
     <div class="flex-row">
@@ -53,7 +55,12 @@
                 financeiro orto</button>
         </div>
     </div>
+    <div class="flex-row">
+        <div class="flex-item">
+            <button type="button" class="action-btn" data-relatorio="financeiro" data-type="spc">SPC inadimplência</button>
+        </div>
+    </div>
 </body>
-<script type="text/javascript" src="excel.js"></script>
+<script type="text/javascript" src="app.js"></script>
 
 </html>
