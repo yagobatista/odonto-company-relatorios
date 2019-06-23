@@ -6,7 +6,7 @@ var dialog = app.dialog;
 const ignoredColumnValues = ['LISTA - CONCLUÍDOS', 'PERÍODO:', 'EMPRESA:', 'NOME', 'CONCLUÍDOS:', 'SUB TOTAL:', 'TOTAL:', 'MANUTENÇÃO - PROCEDIMENTO - DETALHADO'];
 
 
-module.exports = function excelImport({ data, type, columns }) {
+module.exports = function excelImport({ data, type, columns, button }) {
     dialog.showOpenDialog(filePath => {
         const workbook = new Workbook();
         const currentQuery = queries[type];
@@ -18,7 +18,7 @@ module.exports = function excelImport({ data, type, columns }) {
                 sheet.eachRow(row => {
                     const rowValues = row.values;
                     if (type === 'financeiro_spc') {
-                        data.push(`'${rowValues[1]}'`)
+                        data.push(rowValues[1])
                     } else {
                         if (!isNaN(rowValues[2])) {
                             dentista = rowValues[3];
@@ -32,7 +32,18 @@ module.exports = function excelImport({ data, type, columns }) {
                     }
                 });
                 if (type === 'financeiro_spc') {
-                    fetchData(excelExport, type, `WHERE CNPJ_CPF in (${data.join(', ')}) AND `)
+                    fetchData({callback(rows){
+                        const clientesQuePagaram = [];
+                        data.forEach(value =>{
+                            const result = rows.data.find(item => item.documento === value);
+                            if (!result) {
+                                debugger;
+                                clientesQuePagaram.push(result);
+                            }
+                        })
+                        button.disabled = false;
+                        debugger;
+                    }, type})
                 } else {
                     excelExport({
                         data,

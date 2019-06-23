@@ -5,25 +5,42 @@ const date = new Date();
 const today = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
 
 const queries = {
-    inadimplencia: {
-        query: () => `SELECT * FROM (
-                        SELECT COUNT(*) AS NAO_PAGAS, CNPJ_CPF, NOME FROM MAN101 A
-                            inner join EMD101 E on A.CNPJ_CPF = E.CGC_CPF
-                        WHERE DATA_LANC < '${today}' AND DATA_PAGO IS NULL GROUP BY CNPJ_CPF, NOME
+    inadimplencia_clinico: {
+        query: (where) => `SELECT * FROM (
+                        SELECT E.CGC_CPF AS CNPJ_CPF, E.NOME, COUNT(*) AS NAO_PAGAS
+                        FROM CRD111 C INNER JOIN EMD101 E ON C.CGC_CPF = E.CGC_CPF
+                        WHERE NOT EXISTS (SELECT * FROM BXD111 WHERE BXD111.DOCUMENTO = C.DOCUMENTO AND BXD111.CGC_CPF = C.CGC_CPF)GROUP BY E.CGC_CPF, E.NOME 
                     ) where ${getWhereQtdNaoPagas()}`,
         estrutura: (row) => ({
-            documento: row.CNPJ_CPF && row.CNPJ_CPF.toString(),
+            documento: row.CGC_CPF && row.CGC_CPF.toString(),
             nome: row.NOME.toString(),
-            parcelas_nao_pagas: row.NAO_PAGAS,
+            cobrancas_nao_pagas: row.NAO_PAGAS,
         }),
         columns: [
             { key: "documento", header: "documento" },
             { key: "nome", header: "Nome" },
-            { key: "parcelas_nao_pagas", header: "Quantidades de parcelas não pagas" },
+            { key: "cobrancas_nao_pagas", header: "Quantidades de cobranças não pagas" },
+        ],
+    },
+    inadimplencia_orto: {
+        query: (where) => `SELECT * FROM (
+                        SELECT COUNT(*) AS NAO_PAGAS, CNPJ_CPF, NOME FROM MAN101 A
+                            inner join EMD101 E on A.CNPJ_CPF = E.CGC_CPF
+                        WHERE DATA_LANC < '${today}' AND DATA_PAGO IS NULL GROUP BY CNPJ_CPF, NOME) 
+                    WHERE ${getWhereQtdNaoPagas()}`,
+        estrutura: (row) => ({
+            documento: row.CGC_CPF && row.CGC_CPF.toString(),
+            nome: row.NOME.toString(),
+            cobrancas_nao_pagas: row.NAO_PAGAS,
+        }),
+        columns: [
+            { key: "documento", header: "documento" },
+            { key: "nome", header: "Nome" },
+            { key: "cobrancas_nao_pagas", header: "Quantidades de cobranças não pagas" },
         ],
     },
     agendamentos: {
-        query: () => `select E.CGC_CPF as cpf,  E.NOME as NOME, E.DT_CADASTRO, COUNT(E.CGC_CPF) AS agendamentos from agenda A 
+        query: (where) => `select E.CGC_CPF as cpf,  E.NOME as NOME, E.DT_CADASTRO, COUNT(E.CGC_CPF) AS agendamentos from agenda A 
                         inner join EMD101 E on A.CNPJ_CPF = E.CGC_CPF
                     WHERE ${getWhereData('E.DT_CADASTRO')} GROUP BY E.CGC_CPF, E.NOME, E.DT_CADASTRO`,
         estrutura: (row) => ({
@@ -40,7 +57,7 @@ const queries = {
         ],
     },
     vendas: {
-        query: () => `select DISTINCT * from (
+        query: (where) => `select DISTINCT * from (
                         select V.NOME as vendedor_nome, E.DT_CADASTRO, C.CGC_CPF, E.NOME from VENDED V inner join EMD101 E
                             on V.CODIGO = E.COD_VENDEDOR inner join CRD111 C on C.CGC_CPF = E.CGC_CPF where ${getWhereData('E.DT_CADASTRO')}
                      )`,
@@ -101,11 +118,15 @@ const queries = {
         ],
     },
     financeiro_spc: {
-        query: () => `SELECT * FROM (
-                        SELECT COUNT(*) AS NAO_PAGAS, CNPJ_CPF, NOME FROM MAN101 A
+        query: (where) => `SELECT * FROM 
+                        (SELECT CNPJ_CPF, NOME, COUNT(*) AS NAO_PAGAS FROM MAN101 A
                             inner join EMD101 E on A.CNPJ_CPF = E.CGC_CPF
-                        WHERE DATA_LANC < '${today}' AND DATA_PAGO IS NULL GROUP BY CNPJ_CPF, NOME) 
-                    WHERE NAO_PAGAS = 0;`,
+                        WHERE DATA_LANC < '${today}' AND DATA_PAGO IS NULL GROUP BY CNPJ_CPF, NOME
+                        UNION
+                        SELECT E.CGC_CPF AS CNPJ_CPF, E.NOME, COUNT(*) AS NAO_PAGAS
+                        FROM CRD111 C INNER JOIN EMD101 E ON C.CGC_CPF = E.CGC_CPF
+                        WHERE NOT EXISTS (SELECT * FROM BXD111 WHERE BXD111.DOCUMENTO = C.DOCUMENTO AND BXD111.CGC_CPF = C.CGC_CPF)GROUP BY E.CGC_CPF, E.NOME)
+                        ${where};`,
         estrutura: (row) => ({
             documento: row.CNPJ_CPF && row.CNPJ_CPF.toString(),
             nome: row.NOME.toString(),
@@ -122,14 +143,17 @@ const queries = {
 
 
 
-const fetchData = function (callback, type, where = 'WHERE') {
+const fetchData = function ({ callback, type, where, button }) {
     let banco = type === 'contrato' ? config.contratos : config.clinica;
     Database.attach(banco, function (err, db) {
         if (err)
             throw alert(err);
 
         const consulta = queries[type];
-        db.query(consulta.query().replace('WHERE', where), function (err, result) {
+        db.query(consulta.query(where), function (err, result) {
+            if (button) {
+                button.disabled = false;
+            }
             if (err)
                 throw alert(`Ocorreu um erro durante a geração do relatório;\n${err}`)
 
