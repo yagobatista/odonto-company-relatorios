@@ -6,10 +6,10 @@ function getWhereData(dataColumn = 'A.DATA') {
     const initDate = el('init_date').value.replace(/-/g, '.');
     const fimDate = el('fim_date').value.replace(/-/g, '.');
     if (initDate) {
-        where.push(`${dataColumn} > '${initDate}'`);
+        where.push(`${dataColumn} >= '${initDate}'`);
     }
     if (fimDate) {
-        where.push(`${dataColumn} < '${fimDate}'`);
+        where.push(`${dataColumn} <= '${fimDate}'`);
     }
     if (!initDate || !fimDate) {
         document.querySelectorAll('.action-btn').forEach(element => {

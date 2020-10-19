@@ -18,5 +18,25 @@ module.exports = {
         lowercase_keys: false,
         role: null,
         pageSize: 4096,
+    },
+    all_clinica: {
+        host: 'localhost',
+        port: 3050,
+        database: 'C:\\Unisoft\\RJ_COPACABANA_CLINICA.FDB',
+        user: 'SYSDBA',
+        password: 'masterkey',
+        lowercase_keys: false,
+        role: null,
+        pageSize: 4096,
+    },
+    all_contratos: {
+        host: '192.168.1.100',
+        port: 3050,
+        database: 'C:\\Unisoft\\RJ_COPACABANA_CONTRATOS.FDB',
+        user: 'SYSDBA',
+        password: 'masterkey',
+        lowercase_keys: false,
+        role: null,
+        pageSize: 4096,
     }
 };

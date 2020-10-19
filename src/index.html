@@ -21,15 +21,33 @@
             <label for="">Quantidade de parcelas</label>
             <input type="number" name="" id="qtd_parcelas">
         </div>
-    </div>
-    <div class="flex-row">
-        <div class="flex-item">
-            <button type="button" class="action-btn" data-relatorio="inadimplencia_clinico">Relatório de inadimplência clínico</button>
+        <div class="flex-row">
+            <div class="flex-item">
+                <label for="unidade">Unidade:</label>
+                <select name="unidade">
+                    <option value="clinica" selected>Copa clínico</option>
+                    <option value="contratos">Copa orto</option>
+                    <option value="all_clinica">Todas unidades clínico</option>
+                    <option value="all_contratos">Todas unidades orto</option>
+                </select>
+            </div>
         </div>
     </div>
     <div class="flex-row">
         <div class="flex-item">
-            <button type="button" class="action-btn" data-relatorio="inadimplencia_orto">Relatório de inadimplência orto</button>
+            <button type="button" class="action-btn" data-relatorio="inadimplencia_clinico">Relatório de inadimplência
+                clínico</button>
+        </div>
+    </div>
+    <div class="flex-row">
+        <div class="flex-item">
+            <button type="button" class="action-btn" data-relatorio="inadimplencia_orto">Relatório de inadimplência
+                orto</button>
+        </div>
+    </div>
+    <div class="flex-row">
+        <div class="flex-item">
+            <button type="button" class="action-btn" data-relatorio="relatorio_caixa">Relatório de caixa</button>
         </div>
     </div>
     <div class="flex-row">
@@ -57,7 +75,8 @@
     </div>
     <div class="flex-row">
         <div class="flex-item">
-            <button type="button" class="action-btn" data-relatorio="financeiro" data-type="spc">SPC inadimplência</button>
+            <button type="button" class="action-btn" data-relatorio="financeiro" data-type="spc">SPC
+                inadimplência</button>
         </div>
     </div>
 </body>

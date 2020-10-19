@@ -12,7 +12,8 @@ document.querySelectorAll('.action-btn').forEach(element => {
         if (type === 'financeiro') {
             excelImport({ type: `${type}_${dataset.type}`, button });
         } else {
-            fetchData({callback: excelExport, type, button});
+            const select = document.querySelector('[name="unidade"]');
+            fetchData({callback: excelExport, type, button, connection_name: select.value});
         }
     }, false);
 });
