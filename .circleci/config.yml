@@ -1,27 +1,34 @@
 version: 2.1
+
 orbs:
-  win: circleci/windows@2.3.0
+  win: circleci/windows@2.2.0
 
 jobs:
   build:
+    executor:
+      name: win/default # executor type
+      size: "medium" 
     working_directory: ~/repo
     docker:
       - image: circleci/node:11
     steps:
       - checkout
-      - run:
-          name: Update NPM
-          command: "sudo npm install -g npm"
+      # - run:
+      #     name: Update NPM
+      #     command: "sudo npm install -g npm"
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
           name: Install Dependencies
           command: npm install
-      - run:
-          name: Install dpkg and fakeroot
-          command: |
-            sudo apt-get update -y
-            sudo apt-get install -y dpkg fakeroot wine64
+      # - run:
+      #     name: Install dpkg and fakeroot
+      #     command: |
+      #       sudo apt-get update -y
+      #       sudo apt-get install -y dpkg fakeroot
+      #       sudo dpkg --add-architecture i386
+      #       sudo apt-get update -y
+      #       sudo apt install -y wine32 mono-devel
 
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
