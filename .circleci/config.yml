@@ -9,19 +9,19 @@ jobs:
       - image: circleci/node:11
     steps:
       - checkout
-      # - run:
-      #     name: Update NPM
-      #     command: "sudo npm install -g npm"
+      - run:
+          name: Update NPM
+          command: "sudo npm install -g npm"
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
           name: Install Dependencies
           command: npm install
-      # - run:
-      #     name: Install dpkg and fakeroot
-      #     command: |
-      #       sudo apt-get update -y
-      #       sudo apt-get install -y dpkg fakeroot
+      - run:
+          name: Install dpkg and fakeroot
+          command: |
+            sudo apt-get update -y
+            sudo apt-get install -y dpkg fakeroot wine64
 
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
