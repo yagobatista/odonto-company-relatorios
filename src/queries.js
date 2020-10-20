@@ -131,6 +131,57 @@ order BY TIPO, DATA;`,
             },
         ],
     },
+    orto_relatorio_caixa: {
+        query: (where) => `SELECT * FROM (
+SELECT CAIXA.LANCTO, CAIXA.DATA, PESSOAS.NOME, PESSOAS.CGC_CPF CPF,
+'TIPO ' || TIPOS.CODIGO || ': ' || TIPOS.NOME TIPO, CAIXA.VALOR
+FROM CXD555 CAIXA INNER JOIN CRD013 TIPOS ON CAIXA.TIPO=TIPOS.CODIGO
+INNER JOIN EMD101 PESSOAS ON TRIM(SUBSTRING(CAIXA.HISTORICO FROM POSITION('-', CAIXA.HISTORICO, 6) + 1 FOR 16))=PESSOAS.CGC_CPF
+WHERE ${getWhereData('CAIXA.DATA')} AND CAIXA.TIPO=54
+UNION ALL
+SELECT CAIXA.LANCTO, CAIXA.DATA, PESSOAS.NOME, MANUTENCAO.CGC_CPF CPF,
+'TIPO ' || TIPOS.CODIGO || ': ' || TIPOS.NOME TIPO, CAIXA.VALOR
+FROM CXD555 CAIXA INNER JOIN CRD111 MANUTENCAO
+ON TRIM(SUBSTRING(CAIXA.HISTORICO FROM POSITION('-' IN CAIXA.HISTORICO) + 1 FOR POSITION('-', CAIXA.HISTORICO, 6) - POSITION('-' IN CAIXA.HISTORICO) - 1))=MANUTENCAO.DOCUMENTO
+INNER JOIN CRD013 TIPOS ON CAIXA.TIPO=TIPOS.CODIGO
+INNER JOIN EMD101 PESSOAS ON MANUTENCAO.CGC_CPF=PESSOAS.CGC_CPF
+WHERE ${getWhereData('CAIXA.DATA')} AND CAIXA.TIPO IN (51, 52, 53, 55)
+)
+ORDER BY TIPO, DATA;`,
+        estrutura: (row) => ({
+            documento: row.CPF && row.CPF.toString(),
+            nome: row.NOME.toString(),
+            lacamento: row.LANCTO.toString(),
+            data: row.DATA && row.DATA.toLocaleDateString('pt-br'),
+            tipo: row.TIPO.toString(),
+            valor: row.VALOR.toString()
+        }),
+        columns: [{
+                key: "documento",
+                header: "documento"
+            },
+            {
+                key: "nome",
+                header: "Nome"
+            },
+            {
+                key: "lacamento",
+                header: "Lançamento"
+            },
+            {
+                key: "data",
+                header: "Data"
+            },
+            {
+                key: "tipo",
+                header: "Tipo"
+            },
+            {
+                key: "valor",
+                header: "Valor"
+            },
+        ],
+    },
     agendamentos: {
         query: (where) => `select E.CGC_CPF as cpf,  E.NOME as NOME, E.DT_CADASTRO, COUNT(E.CGC_CPF) AS agendamentos from agenda A 
                         inner join EMD101 E on A.CNPJ_CPF = E.CGC_CPF
