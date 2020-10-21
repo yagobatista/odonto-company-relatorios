@@ -1,5 +1,5 @@
 module.exports = {
-    clinica: {
+    copa_clinica: {
         host: '192.168.1.100',
         port: 3050,
         database: 'C:\\Unisoft\\RJ_COPACABANA_CLINICA.FDB',
@@ -9,7 +9,7 @@ module.exports = {
         role: null,
         pageSize: 4096,
     },
-    contratos: {
+    copa_contratos: {
         host: '192.168.1.100',
         port: 3050,
         database: 'C:\\Unisoft\\RJ_COPACABANA_CONTRATOS.FDB',
@@ -19,24 +19,44 @@ module.exports = {
         role: null,
         pageSize: 4096,
     },
-    all_clinica: {
-        host: 'localhost',
+    bota_clinica: {
+        host: '201.17.87.6',
         port: 3050,
-        database: 'C:\\Unisoft\\RJ_COPACABANA_CLINICA.FDB',
+        database: 'C:\\Unisoft\\BOTAFOGO_CLINICA.FDB',
         user: 'SYSDBA',
         password: 'masterkey',
         lowercase_keys: false,
         role: null,
         pageSize: 4096,
     },
-    all_contratos: {
-        host: 'localhost',
+    bota_contratos: {
+        host: '201.17.87.6',
         port: 3050,
-        database: 'C:\\Unisoft\\RJ_COPACABANA_CONTRATOS.FDB',
+        database: 'C:\\Unisoft\\BOTAFOGO_CONTRATOS.FDB',
         user: 'SYSDBA',
         password: 'masterkey',
         lowercase_keys: false,
         role: null,
         pageSize: 4096,
-    }
+    },
+    tijuca_clinica: {
+        host: '201.17.125.63',
+        port: 3050,
+        database: 'C:\\Unisoft\\Dados\\RJ_TIJUCA_CLINICA.FDB',
+        user: 'SYSDBA',
+        password: 'masterkey',
+        lowercase_keys: false,
+        role: null,
+        pageSize: 4096,
+    },
+    tijuca_contratos: {
+        host: '201.17.125.63',
+        port: 3050,
+        database: 'C:\\Unisoft\\Dados\\RJ_TIJUCA_CONTRATOS.FDB',
+        user: 'SYSDBA',
+        password: 'masterkey',
+        lowercase_keys: false,
+        role: null,
+        pageSize: 4096,
+    },
 };
