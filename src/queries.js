@@ -354,11 +354,21 @@ const fetchData = function ({
     button,
     connection_name,
 }) {
-    let banco = config[connection_name];
+    let banco = {...config[connection_name]};
+    const file = document.querySelector('[name="arquivo_bd"').files[0];
+    const ip = document.querySelector('[name="ip"').value;
+    if (ip){
+        banco.host = ip;
+    }
+    if(file) {
+        banco.database = file.path;
+    }
     Database.attach(banco, function (err, db) {
-        if (err)
+        if (err){
+            button.disabled = false;
             throw alert(err);
- 
+        }
+
         const consulta = queries[type];
         db.query(consulta.query(where), function (err, result) {
             if (button) {

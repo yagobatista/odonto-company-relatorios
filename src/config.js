@@ -20,7 +20,7 @@ module.exports = {
         pageSize: 4096,
     },
     bota_clinica: {
-        host: '201.17.87.6',
+        host: '192.168.0.181',
         port: 3050,
         database: 'C:\\Unisoft\\BOTAFOGO_CLINICA.FDB',
         user: 'SYSDBA',
@@ -30,7 +30,7 @@ module.exports = {
         pageSize: 4096,
     },
     bota_contratos: {
-        host: '201.17.87.6',
+        host: '192.168.0.181',
         port: 3050,
         database: 'C:\\Unisoft\\BOTAFOGO_CONTRATOS.FDB',
         user: 'SYSDBA',
