@@ -355,13 +355,13 @@ const fetchData = function ({
     connection_name,
 }) {
     let banco = {...config[connection_name]};
-    const file = document.querySelector('[name="arquivo_bd"').files[0];
+    const file = document.querySelector('[name="arquivo_bd"').value;
     const ip = document.querySelector('[name="ip"').value;
     if (ip){
         banco.host = ip;
     }
     if(file) {
-        banco.database = file.path;
+        banco.database = file;
     }
     Database.attach(banco, function (err, db) {
         if (err){
