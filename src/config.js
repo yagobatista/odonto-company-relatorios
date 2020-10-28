@@ -1,6 +1,6 @@
 module.exports = {
     copa_clinica: {
-        host: '192.168.1.100',
+        host: '192.168.0.34',
         port: 3050,
         database: 'C:\\Unisoft\\RJ_COPACABANA_CLINICA.FDB',
         user: 'SYSDBA',
@@ -10,7 +10,7 @@ module.exports = {
         pageSize: 4096,
     },
     copa_contratos: {
-        host: '192.168.1.100',
+        host: '192.168.0.34',
         port: 3050,
         database: 'C:\\Unisoft\\RJ_COPACABANA_CONTRATOS.FDB',
         user: 'SYSDBA',
@@ -40,7 +40,7 @@ module.exports = {
         pageSize: 4096,
     },
     tijuca_clinica: {
-        host: '201.17.125.63',
+        host: '192.168.0.146',
         port: 3050,
         database: 'C:\\Unisoft\\Dados\\RJ_TIJUCA_CLINICA.FDB',
         user: 'SYSDBA',
@@ -50,7 +50,7 @@ module.exports = {
         pageSize: 4096,
     },
     tijuca_contratos: {
-        host: '201.17.125.63',
+        host: '192.168.0.146',
         port: 3050,
         database: 'C:\\Unisoft\\Dados\\RJ_TIJUCA_CONTRATOS.FDB',
         user: 'SYSDBA',
