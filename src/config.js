@@ -2,7 +2,7 @@ module.exports = {
     copa_clinica: {
         host: '192.168.0.34',
         port: 3050,
-        database: 'C:\\Unisoft\\RJ_COPACABANA_CLINICA.FDB',
+        database: 'C:\\Unisoft\\Dados\\RJ_COPACABANA_CLINICA.FDB',
         user: 'SYSDBA',
         password: 'masterkey',
         lowercase_keys: false,
@@ -12,7 +12,7 @@ module.exports = {
     copa_contratos: {
         host: '192.168.0.34',
         port: 3050,
-        database: 'C:\\Unisoft\\RJ_COPACABANA_CONTRATOS.FDB',
+        database: 'C:\\Unisoft\\Dados\\RJ_COPACABANA_CONTRATOS.FDB',
         user: 'SYSDBA',
         password: 'masterkey',
         lowercase_keys: false,
